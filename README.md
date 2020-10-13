@@ -123,7 +123,7 @@ $ consul-terraform-sync -config-file=sample.hcl
 1. From Check Point SmartConsole, navigate to Manage & Settings > Blades > Management API > Advanced Settings. 
 
 <p align="left">
-<img width="360" src="images/MgmtAPI-Settings.png"> </a>
+<img width="360" src="https://github.com/CheckPointSW-Community/terraform-checkpoint-nia/blob/main/images/MgmtAPI-Settings.png"> </a>
 </p>
 
   Note: For production deployments, make sure the **consul-terraform-sync** server is configured as a GUI client. For information on GUI Clients, please refer [here.](https://sc1.checkpoint.com/documents/R80.40/WebAdminGuides/EN/CP_R80.40_Gaia_AdminGuide/Content/Topics-GAG/GUI-Clients.htm)
@@ -131,7 +131,7 @@ $ consul-terraform-sync -config-file=sample.hcl
 2. From Check Point SmartConsole, navigate to Manage & Settings > Permissions & Administrators > Trusted Clients > Right Click > New. 
 
 <p align="left">
-<img width="360" src="images/TrustedClient.png"> </a>
+<img width="360" src="https://github.com/CheckPointSW-Community/terraform-checkpoint-nia/blob/main/images/TrustedClient.png"> </a>
 </p>
 
 3. Create API user, From Check Point SmartConsole > navigate to Manage & Settings > Permissions & Administrators > New User > Set username > Set password > Set Permission Profile - Read Write All 
@@ -139,7 +139,7 @@ $ consul-terraform-sync -config-file=sample.hcl
   Note: For granular control of user profiles, please refer [here.](https://sc1.checkpoint.com/documents/R80.40/WebAdminGuides/EN/CP_R80.40_SecurityManagement_AdminGuide/Content/Topics-SECMG/Assigning-Permission-Profiles-to-Administrators.htm?TocPath=Managing%20User%20and%20Administrator%20Accounts%7CManaging%20Administrator%20Accounts%7C_____7)
 
 <p align="left">
-<img width="360" src="images/NewUser.png"> </a>
+<img width="360" src="https://github.com/CheckPointSW-Community/terraform-checkpoint-nia/blob/main/images/NewUser.png"> </a>
 </p>
 
 4. Install Database, From Check Point SmartConsole > drop-down menu from top left > Install Database
@@ -196,7 +196,7 @@ Initialized gateway example
 4. Configure and install security policy with Consul services
 
 <p align="left">
-<img width="800" src="images/ConsulRules.png"> </a>
+<img width="800" src="https://github.com/CheckPointSW-Community/terraform-checkpoint-nia/blob/main/images/ConsulRules.png"> </a>
 </p>
 
 
