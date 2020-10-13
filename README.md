@@ -16,8 +16,8 @@ If there is a missing feature or a bug please follow this [link](https://github.
 
 The **consul-terraform-sync** runs as a daemon that enables a **publisher-subscriber** paradigm between **Consul** and **Check Point Firewalls** based devices to support **Network Infrastructure Automation (NIA)**. 
 
-<p align="left"> 
-<img width="800" src="https://github.com/CheckPointSW/terraform-checkpoint-dynobj-nia/images/CheckPoint-Consul-Integration.png"> </a>
+<p align="left">  
+<img width="800" src="https://github.com/CheckPointSW-Community/terraform-checkpoint-nia/blob/main/images/CheckPoint-Consul-Integration.png"> </a>
 </p>
 
 * consul-terraform-sync **subscribes to updates from the Consul catalog** and executes one or more automation **"tasks"** with the appropriate value of *service variables* based on those updates. **consul-terraform-sync** leverages [Terraform](https://www.terraform.io/) as the underlying automation tool and utilizes the Terraform provider ecosystem to drive relevant change to the network infrastructure. 
