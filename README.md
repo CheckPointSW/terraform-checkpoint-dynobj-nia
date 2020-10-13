@@ -10,7 +10,7 @@ Using this Terraform module in conjunction with **consul-terraform-sync** enable
 This module supports the following:
 * Create, update and delete Dynamic Objects based on name and IP address for the service in Consul catalog. If the service address is not defined in Consul catalog, node address is used instead.
 
-If there is a missing feature or a bug please follow this [link](https://github.com/chkp-jguo/checkpoint-nia-module/issues/new) to provide your feedback. 
+If there is a missing feature or a bug please follow this [link](https://github.com/CheckPointSW/terraform-checkpoint-dynobj-nia/issues/new) to provide your feedback. 
 
 ## What is consul-terraform-sync?
 
