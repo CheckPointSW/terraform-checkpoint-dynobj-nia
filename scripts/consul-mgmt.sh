@@ -3,10 +3,8 @@
 # This script is for Check Point Mgmt Station
 
 # Check Point Mgmt Station credentials
-vUSERNAME="consul-io"
+vUSERNAME="consul_user"
 vPASSWORD="test123"
-# vUSERNAME="consul_user"
-# vPASSWORD="test123"
 
 . /etc/init.d/functions
 . /opt/CPshared/5.0/tmp/.CPprofile.sh
@@ -32,7 +30,7 @@ vTMP_OBJ=$vDIR_CONSUL/tmp/tmp_obj
 vTMP_OBJ_FLAT=$vDIR_CONSUL/tmp/tmp_obj_flat
 
 for file in "$vCURRENT" "$vPREVIOUS" "$vCURRENT_hash" "$vPREVIOUS_hash" "$vCONSUL_LOG" "$vGW_SCRIPT" "$vGW_IP" "$vGW_FILE_current" "$vGW_FILE_md5" "$vGW_FILE_setup_ignore" "$vGW_FILE_setup" "$vID" "$vTMP_ADDR_OUT" "$vTMP_ADDR_SORT" "$vTMP_OBJ" "$vTMP_OBJ_FLAT"
-do 
+do
     if [ ! -f "$file" ]; then
     touch $file
     fi
@@ -66,8 +64,8 @@ mgmt_cli logout -s $vID > /dev/null
 f_update_parse () {
 
 # Go through the json file and find objects and the tag names with IP addresses
-for i in $(jq -r '.objects[] |.uid' $vTMP_ADDR_OUT); do 
-   comments=$(jq -r --arg i "$i" '.objects[]|select (.uid ==$i)| .comments' $vTMP_ADDR_OUT) 
+for i in $(jq -r '.objects[] |.uid' $vTMP_ADDR_OUT); do
+   comments=$(jq -r --arg i "$i" '.objects[]|select (.uid ==$i)| .comments' $vTMP_ADDR_OUT)
    objectname=$(jq -r --arg i "$i" '.objects[]|select (.uid ==$i)| .name' $vTMP_ADDR_OUT)
 #  insert check for the right object here
    if [[ "$comments" == "consul" ]]; then
