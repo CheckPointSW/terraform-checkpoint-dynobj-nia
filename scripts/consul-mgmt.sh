@@ -1,10 +1,12 @@
 #!/bin/bash
-# v1.1 - HashiCorp Consul Integration
+# v1.2 - HashiCorp Consul Integration
 # This script is for Check Point Mgmt Station
 
 # Check Point Mgmt Station credentials
-vUSERNAME="consul_user"
+vUSERNAME="consul-io"
 vPASSWORD="test123"
+# vUSERNAME="consul_user"
+# vPASSWORD="test123"
 
 . /etc/init.d/functions
 . /opt/CPshared/5.0/tmp/.CPprofile.sh
@@ -36,6 +38,7 @@ do
     fi
 done
 
+
 f_update_objects () {
 
 echo > $vTMP_ADDR_SORT
@@ -43,8 +46,24 @@ echo > $vTMP_OBJ
 echo > $vTMP_OBJ_FLAT
 
 mgmt_cli login user $vUSERNAME password $vPASSWORD > $vID
-mgmt_cli show dynamic-objects -s $vID details-level full --format json > $vTMP_ADDR_OUT
+mgmt_cli show dynamic-objects -s $vID details-level full limit 500 --format json > $vTMP_ADDR_OUT
+
+loop=0
+while [ $loop == 0 ]; do
+vTO=$(cat $vTMP_ADDR_OUT | grep -w "to\"\ :" | awk -F ":" '{print $2}' | sed s/,//g | tail -1)
+vTOTAL=$(cat $vTMP_ADDR_OUT | grep -w "total\"\ :" | awk -F ":" '{print $2}' | sed s/,//g | tail -1)
+if [ $vTOTAL != 0 ];
+  then
+      mgmt_cli show dynamic-objects -s $vID details-level full limit 500 offset $vTO --format json >> $vTMP_ADDR_OUT
+  else
+      loop=1
+fi
+done
+
 mgmt_cli logout -s $vID > /dev/null
+}
+
+f_update_parse () {
 
 # Go through the json file and find objects and the tag names with IP addresses
 for i in $(jq -r '.objects[] |.uid' $vTMP_ADDR_OUT); do 
@@ -70,7 +89,7 @@ for i in $vSVC; do
 done
 
 cat $vTMP_OBJ_FLAT | grep -v -e '^$' > $vCURRENT
-rm $vID $vTMP_ADDR_OUT $vTMP_OBJ_FLAT
+rm $vID $vTMP_ADDR_OUT $vTMP_OBJ_FLAT $vTMP_ADDR_SORT $vTMP_OBJ
 
 }
 
@@ -89,6 +108,7 @@ for i in `cat $vGW_IP | awk -F "," '{print $1}'`
             echo "$vDATE Update complete for $i" >> $vCONSUL_LOG
     fi
 done
+rm $vDIR_CONSUL/tmp/gw_md5_cmd
 }
 
 f_gw_update() {
@@ -118,6 +138,7 @@ if [ "$vCURRENT_check" == "$vPREVIOUS_check" ] ;
         f_gw_update
         cp $vCURRENT $vPREVIOUS
 fi
+
 }
 
 f_check_gw() {
@@ -132,9 +153,11 @@ for i in `cat $vGW_IP | grep -v init`
     echo "$vDATE Created Consul directories and files on gateway $i" >> $vCONSUL_LOG
     rm $vDIR_CONSUL/tmp/gw_setup_cmd
     done
+    rm $vDIR_CONSUL/tmp/gw_setup_cmd_ignore
 }
 
 # Start
 f_check_gw
 f_update_objects
+f_update_parse
 f_start
