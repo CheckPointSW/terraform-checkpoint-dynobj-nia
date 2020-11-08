@@ -1,5 +1,5 @@
 #!/bin/bash
-# v1.1 - HashiCorp Consul Integration
+# v1.2 - HashiCorp Consul Integration
 # This script is for Check Point Gateway
 . /etc/init.d/functions
 . /opt/CPshared/5.0/tmp/.CPprofile.sh
@@ -13,6 +13,7 @@ fi
 vDATE=`date +%Y-%m-%d_%H:%M:%S`
 vDIR_CONSUL=/usr/local/consul
 vCURRENT_GW=$vDIR_CONSUL/current_gw
+vCURRENT_GW_tmp=$vDIR_CONSUL/tmp/current_gw
 vCURRENT=$vDIR_CONSUL/current
 vSVC_LIST=$vDIR_CONSUL/svc_list
 vCONSUL_LOG=$vDIR_CONSUL/log/consul.log
@@ -51,7 +52,7 @@ for SVC_NAME in `cat $vCURRENT | awk -F "," '{print $1}'`
         _loop=`cat $vCURRENT | grep -w $SVC_NAME`
         for SVC_ADDR in $(echo $_loop | sed "s/,/ /g") ;
             do
-            if [ `cat $vCURRENT_GW | grep -w $SVC_ADDR | wc -l` == 0 ];
+            if [ `cat $vCURRENT_GW | grep -w $SVC_NAME | grep -w $SVC_ADDR | wc -l` == 0 ];
                 then
                 echo "dynamic_objects -o $SVC_NAME -r $SVC_ADDR $SVC_ADDR -a" >> $vTMP_ADDR
                 cat $vTMP_ADDR | grep -wv "$SVC_NAME -a" >> $vTMP_CHANGES && rm $vTMP_ADDR
@@ -63,6 +64,7 @@ done
 }
 
 f_remove() {
+echo > $vTMP_REMOVE_SVC
 for SVC_NAME in `cat $vCURRENT_GW | awk -F "," '{print $1}'`
     do
     # Delete Service from Consul
@@ -75,7 +77,7 @@ for SVC_NAME in `cat $vCURRENT_GW | awk -F "," '{print $1}'`
         _loop=`cat $vCURRENT_GW | grep -w $SVC_NAME`
         for SVC_ADDR in $(echo $_loop | sed "s/,/ /g") ;
             do
-            if [ `cat $vCURRENT | grep -w $SVC_ADDR | wc -l` == 0 ];
+            if [ `cat $vCURRENT | grep -w $SVC_NAME | grep -w $SVC_ADDR | wc -l` == 0 ];
                 then
                 echo "dynamic_objects -o $SVC_NAME -r $SVC_ADDR $SVC_ADDR -d" >> $vTMP_ADDR
                 cat $vTMP_ADDR | grep -wv "$SVC_NAME -d" >> $vTMP_CHANGES && rm $vTMP_ADDR
@@ -86,9 +88,44 @@ done
 
 }
 
+f_current_gw() {
+objects=`dynamic_objects -l | grep "object name" | awk '{print $4}'`
+echo > $vCURRENT_GW_tmp
+for object in $objects
+do
+    obj_range=`dynamic_objects -lo $object| grep range | awk '{print $2}'`
+    for range_number in $obj_range
+        do
+        start=`dynamic_objects -lo $object | grep "range $range_number" | awk '{print $4}'`
+        end=`dynamic_objects -lo $object | grep "range $range_number" | awk '{print $5}'`
+        if [ $start == $end ] ;
+            then
+            echo "$object,$start" >> $vCURRENT_GW_tmp
+        else
+            b=`echo $end | awk -F "." '{print $1"."$2"."$3"."$4+1}'`
+            end=$b
+            until [ $start = $end ]
+            do
+                echo "$object,$start" >> $vCURRENT_GW_tmp
+                a=`echo $start | awk -F "." '{print $1"."$2"."$3"."$4+1}'`
+                start=$a
+            done
+        fi
+    done
+done
+
+svclist=`cat $vCURRENT_GW_tmp | awk -F "," '{print $1}' | sort -u`
+echo > $vCURRENT_GW
+for name in $svclist
+do
+    ip=`cat $vCURRENT_GW_tmp | grep $name | awk -F "," '{print $2}' | sort -u | awk -vORS=, '{ print $1 }' | sed 's/,$/\n/'`
+    echo "$name,$ip" >> $vCURRENT_GW
+done
+
+}
 f_start() {
 # Extract current configuration
-$FWDIR/bin/dynamic_objects -l | egrep "object|range" | awk '{print $1, $2, $3, $4}' | sed s/object\ name/\|/g | sed s/\:\ //g | sed s/range\ \[0-9]*//g | tr -d '\n'| tr '|' '\n'| sed -e 's/^[ \t]*//' | sed -e 's/[ \t]*$//' | sed s/\ \/,/g | grep -v -e '^$' > $vCURRENT_GW
+f_current_gw
 
 # Loop through changes
 f_add
@@ -113,5 +150,4 @@ fi
 }
 
 f_start
-
 exit 0
