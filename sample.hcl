@@ -26,7 +26,7 @@ driver "terraform" {
   }
 }
 
-provider "checkpoint" {
+terraform_provider "checkpoint" {
   server = "192.168.0.5"
   username = "consul_user"
   password = "test123"

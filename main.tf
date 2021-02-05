@@ -33,6 +33,14 @@ resource "null_resource" "publish" {
   }
 }
 
+terraform {
+  required_providers {
+    checkpoint = {
+      source = "CheckPointSW/checkpoint"
+    }
+  }
+}
+
 locals {
   timestamp = timestamp()
 }
