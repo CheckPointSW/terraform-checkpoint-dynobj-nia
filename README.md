@@ -31,7 +31,7 @@ Please refer to this [link](https://www.consul.io/docs/nia/installation/install)
 | Name | Version |
 |------|---------|
 | terraform | >= 0.13 |
-| consul-terraform-sync | >= 0.1.0 |
+| consul-terraform-sync | >= 0.1.0-techpreview2 |
 | consul | >= 1.7 |
 
 ## Providers
@@ -81,7 +81,7 @@ driver "terraform" {
   }
 }
 
-provider "checkpoint" {
+terraform_provider "checkpoint" {
   server = "192.168.0.5"
   username = "consul_user"
   password = "test123"
@@ -230,7 +230,7 @@ task {
 
 **Provider** - Use Check Point credentials from previous steps
 ```
-provider "checkpoint" {
+terraform_provider "checkpoint" {
   server = "192.168.0.5"
   username = "consul_user"
   password = "test123"
@@ -270,7 +270,7 @@ chmod 755 consul-terraform-sync
 ```
 
 
-### 4. Troubleshooting
+### 4. Helpful commands
 
 1. Verify Consul services by running dynamic_objects command from each security gateway
 
